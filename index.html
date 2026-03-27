@@ -3,179 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Prompt Generator สำหรับคุณครู</title>
+    <title>AI Prompt Generator สำหรับคุณครู (Pro Edition)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #3498db; --secondary: #2c3e50; --bg: #f4f7f6; --text: #333; }
-        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 800px; margin: auto; line-height: 1.6; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        :root { --primary: #2980b9; --secondary: #2c3e50; --bg: #f0f4f8; --text: #333; --accent: #e67e22; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); padding: 20px; max-width: 850px; margin: auto; line-height: 1.6; }
+        .card { background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px; border-top: 5px solid var(--primary); }
         
-        header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
-        h1 { color: var(--primary); margin: 0 0 10px 0; }
-        p.subtitle { color: #7f8c8d; margin: 0; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--primary); margin: 0 0 10px 0; font-size: 2rem; }
+        p.subtitle { color: #666; font-size: 1.05rem; }
 
-        .form-group { margin-bottom: 15px; }
-        label { font-weight: 600; display: block; margin-bottom: 8px; font-size: 0.95rem; color: var(--secondary); }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: border 0.3s; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        .section-title { font-weight: 600; color: var(--secondary); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 25px; margin-bottom: 15px; font-size: 1.1rem; }
         
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 18px; }
+        label { font-weight: 600; display: block; margin-bottom: 8px; font-size: 0.95rem; color: #444; }
+        .hint { font-weight: 300; font-size: 0.85rem; color: #888; margin-left: 5px; }
         
-        .generate-btn { background: var(--primary); color: white; border: none; padding: 15px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 20px; font-weight: bold; transition: background 0.3s; }
-        .generate-btn:hover { background: #2980b9; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid #ccd1d9; border-radius: 8px; font-family: inherit; font-size: 1rem; box-sizing: border-box; transition: all 0.3s ease; background-color: #fafbfc; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background-color: #fff; box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        
+        .generate-btn { background: var(--primary); color: white; border: none; padding: 16px; font-size: 1.25rem; border-radius: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; transition: all 0.3s; box-shadow: 0 4px 6px rgba(41, 128, 185, 0.2); }
+        .generate-btn:hover { background: #1f6391; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(41, 128, 185, 0.3); }
 
         /* ส่วนแสดงผลลัพธ์ */
-        #output-section { display: none; margin-top: 30px; }
-        .prompt-box { background: #f8f9fa; border: 2px dashed #bdc3c7; padding: 20px; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; font-size: 1rem; color: #2c3e50; margin-bottom: 20px; }
+        #output-section { display: none; margin-top: 30px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-copy { background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
-        .btn-download { background: #e67e22; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .prompt-box { background: #f8f9fa; border: 2px solid #e1e4e8; padding: 25px; border-radius: 12px; white-space: pre-wrap; font-family: 'Courier New', Courier, monospace; font-size: 1rem; color: #2c3e50; line-height: 1.7; position: relative; }
+        
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .btn-copy { background: #27ae60; color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
+        .btn-download { background: var(--accent); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.2s; }
         .btn-copy:hover { background: #219653; }
         .btn-download:hover { background: #d35400; }
 
-        @media (max-width: 600px) { .grid, .action-buttons { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .grid-2, .grid-3, .action-buttons { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="card">
         <header>
-            <h1>📝 Teacher Prompt Generator</h1>
-            <p class="subtitle">เครื่องมือสร้างชุดคำสั่ง (Prompt) นำไปวางใน ChatGPT, Gemini หรือ Claude ได้ทันที</p>
+            <h1>✨ Pro Teacher Prompt Generator</h1>
+            <p class="subtitle">สร้างชุดคำสั่งระดับผู้เชี่ยวชาญ เพื่อผลลัพธ์ที่ดีที่สุดจาก AI</p>
         </header>
         
-        <div class="grid">
+        <div class="section-title">1. กำหนดบทบาทและงานหลัก (Role & Task)</div>
+        <div class="grid-2">
             <div class="form-group">
-                <label>🎭 1. คุณต้องการให้ AI สวมบทบาทเป็นใคร? (Role)</label>
+                <label>🎭 AI สวมบทบาทเป็น (Role)</label>
                 <select id="role">
-                    <option value="ครูผู้เชี่ยวชาญด้านการออกแบบการสอนและการเรียนรู้เชิงรุก (Active Learning)">ครูผู้เชี่ยวชาญทั่วไป (Active Learning)</option>
+                    <option value="ครูผู้เชี่ยวชาญด้านการออกแบบการจัดการเรียนรู้และการเรียนรู้เชิงรุก (Active Learning)">ผู้เชี่ยวชาญ Active Learning</option>
                     <option value="ครูวิชาวิทยาศาสตร์และเทคโนโลยี ที่อธิบายเรื่องยากให้เห็นภาพง่ายๆ">ครูสายวิทย์-เทคโนโลยี</option>
                     <option value="ครูวิชาภาษาไทยและสังคมศึกษา ที่เล่าเรื่องราวได้อย่างน่าติดตาม">ครูสายภาษา-สังคม</option>
-                    <option value="ผู้เชี่ยวชาญด้านจิตวิทยาเด็กและการวัดประเมินผล">ผู้เชี่ยวชาญการประเมินผล</option>
+                    <option value="ผู้เชี่ยวชาญด้านการออกข้อสอบและการวัดประเมินผลตามตัวชี้วัด/สมรรถนะ">ผู้เชี่ยวชาญการประเมินผล</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>🎯 2. งานที่ต้องการให้ AI ช่วยทำ (Task)</label>
+                <label>🎯 งานที่ต้องการให้ทำ (Task)</label>
                 <select id="task">
-                    <option value="เขียนแผนการสอน (Lesson Plan) สำหรับ 1 คาบเรียน">เขียนแผนการสอน 1 คาบ</option>
-                    <option value="ออกแบบข้อสอบปรนัย 4 ตัวเลือก จำนวน 10 ข้อ พร้อมเฉลยและคำอธิบายอย่างละเอียด">ออกข้อสอบปรนัย</option>
-                    <option value="ออกแบบกิจกรรมกลุ่มในห้องเรียน (Ice-breaking / Active Learning)">คิดกิจกรรมในห้องเรียน</option>
-                    <option value="สร้างตารางเกณฑ์การประเมินผล (Rubric Score) แบบ 4 ระดับ">สร้างตารางประเมินผล (Rubric)</option>
+                    <option value="เขียนแผนการจัดการเรียนรู้ (Lesson Plan)">📝 เขียนแผนการจัดการเรียนรู้</option>
+                    <option value="ออกข้อสอบปรนัย 4 ตัวเลือก จำนวน 10 ข้อ">📝 ออกข้อสอบปรนัย</option>
+                    <option value="ออกแบบกิจกรรมกลุ่ม (Active Learning / เกมในห้องเรียน)">🎲 ออกแบบกิจกรรมในห้อง</option>
+                    <option value="สร้างตารางเกณฑ์การประเมินผล (Rubric Score)">📊 สร้างตารางประเมิน Rubric</option>
                 </select>
             </div>
         </div>
 
-        <div class="grid">
+        <div class="section-title">2. บริบทและเป้าหมาย (Context & Objective)</div>
+        
+        <div class="grid-3">
             <div class="form-group">
-                <label>📚 3. วิชา (Subject)</label>
-                <input type="text" id="subject" placeholder="เช่น วิทยาศาสตร์, ประวัติศาสตร์">
+                <label>📚 วิชา</label>
+                <input type="text" id="subject" placeholder="เช่น วิทยาศาสตร์">
             </div>
             <div class="form-group">
-                <label>🎓 4. ระดับชั้น (Grade)</label>
+                <label>🎓 ระดับชั้น</label>
                 <input type="text" id="grade" placeholder="เช่น ป.5, ม.3">
             </div>
+            <div class="form-group">
+                <label>⏱️ เวลาที่ใช้ <span class="hint">(สำคัญมาก)</span></label>
+                <input type="text" id="duration" placeholder="เช่น 1 คาบ (50 นาที)" value="1 คาบ (50 นาที)">
+            </div>
+        </div>
+
+        <div class="grid-3">
+            <div class="form-group">
+                <label>📌 มาตรฐาน <span class="hint">(ไม่บังคับ)</span></label>
+                <input type="text" id="standard" placeholder="เช่น ว 1.2">
+            </div>
+            <div class="form-group">
+                <label>🎯 ตัวชี้วัด <span class="hint">(ไม่บังคับ)</span></label>
+                <input type="text" id="indicator" placeholder="เช่น ป.5/1">
+            </div>
+            <div class="form-group">
+                <label>📖 สาระการเรียนรู้ <span class="hint">(ไม่บังคับ)</span></label>
+                <input type="text" id="coreContent" placeholder="เช่น หน้าที่ของอวัยวะ...">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>🔎 หัวข้อเนื้อหา (Topic)</label>
+                <input type="text" id="topic" placeholder="เช่น ระบบหายใจ, การเสียกรุงศรีอยุธยาฯ">
+            </div>
+            <div class="form-group">
+                <label>🛠️ ทักษะที่ต้องการเน้น <span class="hint">(ไม่บังคับ)</span></label>
+                <input type="text" id="skills" placeholder="เช่น การคิดวิเคราะห์, การทำงานเป็นทีม">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>🔎 5. หัวข้อหรือรายละเอียดเนื้อหา (Topic & Details)</label>
-            <textarea id="topic" rows="3" placeholder="ระบุเนื้อหาที่ต้องการให้ AI เน้นเป็นพิเศษ เช่น ระบบย่อยอาหารของมนุษย์, สาเหตุการเสียกรุงศรีอยุธยาครั้งที่ 2..."></textarea>
+            <label>🏅 สมรรถนะ/เป้าหมายที่อยากให้เด็กทำได้ (Learning Objective)</label>
+            <textarea id="objective" rows="2" placeholder="เช่น เด็กสามารถระบุอวัยวะและอธิบายกลไกการหายใจเข้า-ออกได้เบื้องต้น และตระหนักถึงการดูแลรักษาสุขภาพ"></textarea>
         </div>
 
+        <div class="section-title">3. รูปแบบผลลัพธ์ (Format & Tone)</div>
         <div class="form-group">
-            <label>💬 6. น้ำเสียงและรูปแบบผลลัพธ์ (Tone & Format)</label>
             <select id="format">
-                <option value="ใช้ภาษาที่เป็นทางการเชิงวิชาการ จัดเรียงเนื้อหาเป็นหัวข้อ (Bullet points) ให้อ่านง่าย">เป็นทางการ (วิชาการ + อ่านง่าย)</option>
-                <option value="ใช้ภาษาสนุกสนาน เป็นกันเอง เหมาะสำหรับนำไปพูดกับเด็กนักเรียนโดยตรง">สนุกสนาน (เหมาะสำหรับพูดกับเด็ก)</option>
-                <option value="นำเสนอข้อมูลในรูปแบบตาราง (Table) ที่ชัดเจนและนำไปใช้งานต่อได้ทันที">รูปแบบตาราง (Table)</option>
+                <option value="ใช้ภาษาที่เป็นทางการเชิงวิชาการ จัดเรียงเนื้อหาเป็นหัวข้อ (Bullet points) ให้อ่านง่าย และอธิบายขั้นตอนให้ชัดเจนจนครูคนอื่นนำไปสอนตามได้ทันที">ทางการ (วิชาการ + นำไปใช้ได้จริง)</option>
+                <option value="ใช้ภาษาสนุกสนาน เป็นกันเอง กระตุ้นความสนใจ เหมาะสำหรับใช้สื่อสารกับนักเรียน">สนุกสนาน (น่าสนใจ เป็นกันเอง)</option>
+                <option value="นำเสนอข้อมูลในรูปแบบตาราง (Table) ที่เป็นระเบียบ ชัดเจน">รูปแบบตาราง (Table)</option>
             </select>
         </div>
 
-        <button class="generate-btn" onclick="generatePrompt()">✨ สร้าง Prompt ตอนนี้</button>
+        <button class="generate-btn" onclick="generatePrompt()">🚀 สร้าง Prompt ระดับโปร</button>
     </div>
 
     <div id="output-section" class="card">
-        <h2 style="color: var(--secondary); margin-top: 0;">✅ พรอมต์ของคุณพร้อมแล้ว!</h2>
-        <p style="color: #666; font-size: 0.9rem;">คัดลอกข้อความด้านล่างนี้ ไปวางใน AI ที่คุณใช้งานอยู่ได้เลย</p>
+        <h2 style="color: var(--primary); margin-top: 0; font-size: 1.5rem;">✅ Prompt ของคุณพร้อมแล้ว!</h2>
+        <p style="color: #666; font-size: 1rem; margin-bottom: 20px;">คัดลอกข้อความทั้งหมดในกล่องนี้ ไปวางใน ChatGPT, Gemini หรือ Claude ได้เลยครับ</p>
         
         <div id="generated-prompt" class="prompt-box"></div>
         
         <div class="action-buttons">
             <button class="btn-copy" onclick="copyToClipboard()">📋 คัดลอก Prompt</button>
-            <button class="btn-download" onclick="downloadTxt()">💾 ดาวน์โหลดเป็นไฟล์ .txt</button>
+            <button class="btn-download" onclick="downloadTxt()">💾 ดาวน์โหลด (.txt)</button>
         </div>
     </div>
 
 <script>
-    // ตัวแปรเก็บข้อความ Prompt ปัจจุบัน
     let currentPromptText = "";
 
     function generatePrompt() {
-        // ดึงข้อมูลจากฟอร์ม
+        // 1. ดึงข้อมูลจากฟอร์ม
         const role = document.getElementById('role').value;
-        const task = document.getElementById('task').value;
-        const subject = document.getElementById('subject').value || "[โปรดระบุวิชา]";
-        const grade = document.getElementById('grade').value || "[โปรดระบุระดับชั้น]";
-        const topic = document.getElementById('topic').value || "[โปรดระบุหัวข้อ]";
+        const taskRaw = document.getElementById('task').value;
+        const subject = document.getElementById('subject').value || "[ระบุวิชา]";
+        const grade = document.getElementById('grade').value || "[ระบุระดับชั้น]";
+        const duration = document.getElementById('duration').value || "50 นาที";
+        
+        // ข้อมูลหลักสูตรแกนกลาง (ใหม่)
+        const standard = document.getElementById('standard').value.trim();
+        const indicator = document.getElementById('indicator').value.trim();
+        const coreContent = document.getElementById('coreContent').value.trim();
+        
+        const topic = document.getElementById('topic').value || "[ระบุหัวข้อ]";
+        const skills = document.getElementById('skills').value.trim();
+        const objective = document.getElementById('objective').value || "เข้าใจเนื้อหาและสามารถนำไปประยุกต์ใช้ได้จริงตามสมรรถนะที่กำหนด";
         const format = document.getElementById('format').value;
 
-        // ประกอบร่าง Prompt ให้เป็นโครงสร้างที่ AI ชอบ (Structured Prompt)
+        // ประมวลผลข้อความเสริมเฉพาะช่องที่กรอก (Dynamic Injection)
+        let curriculumText = "";
+        if (standard) curriculumText += `\n- มาตรฐานการเรียนรู้: ${standard}`;
+        if (indicator) curriculumText += `\n- ตัวชี้วัด: ${indicator}`;
+        if (coreContent) curriculumText += `\n- สาระการเรียนรู้แกนกลาง: ${coreContent}`;
+
+        let skillsText = "";
+        if (skills !== "") skillsText = `\n- ทักษะ/สมรรถนะย่อยที่ต้องการเน้นเป็นพิเศษ: ${skills}`;
+
+        // 2. ความฉลาดของระบบ: ปรับโครงสร้าง [Structure] อัตโนมัติ
+        let specificStructure = "";
+        
+        if (taskRaw.includes("แผนการจัดการเรียนรู้")) {
+            specificStructure = `[Structure / องค์ประกอบที่ต้องมี]
+กรุณาแบ่งเนื้อหาออกเป็นหัวข้อดังต่อไปนี้อย่างชัดเจน:
+1. จุดประสงค์การเรียนรู้ (แยกเป็นฐานสมรรถนะ K-S-A: ความรู้ (Knowledge), ทักษะ/สมรรถนะ (Skill), และเจตคติ (Attitude))
+2. สื่อและแหล่งการเรียนรู้ที่ต้องเตรียม
+3. กิจกรรมการจัดการเรียนรู้ (จัดสรรเวลาให้พอดีกับ ${duration} โดยแบ่งเป็น: ขั้นนำเข้าสู่บทเรียน, ขั้นสอน/กิจกรรมหลัก, และขั้นสรุป)
+4. การวัดและประเมินผล (ระบุวิธีวัด เครื่องมือ และเกณฑ์การประเมินให้สอดคล้องกับ K-S-A)`;
+        } 
+        else if (taskRaw.includes("ข้อสอบ")) {
+            specificStructure = `[Structure / องค์ประกอบที่ต้องมี]
+กรุณาสร้างข้อสอบโดยมีองค์ประกอบดังนี้ในทุกๆ ข้อ:
+1. คำถามที่ชัดเจน ไม่กำกวม สอดคล้องกับตัวชี้วัดและเป้าหมายการเรียนรู้
+2. ตัวเลือก 4 ตัวเลือก (ก, ข, ค, ง) โดยมี "ตัวลวง" ที่สมเหตุสมผลและพบได้บ่อยจากความเข้าใจผิดของเด็ก
+3. ระบุเฉลยข้อที่ถูกต้อง
+4. คำอธิบายเฉลยอย่างละเอียด (อธิบายว่าทำไมข้อนี้ถูก และทำไมตัวเลือกอื่นถึงผิด)`;
+        } 
+        else if (taskRaw.includes("กิจกรรม")) {
+            specificStructure = `[Structure / องค์ประกอบที่ต้องมี]
+กรุณาออกแบบกิจกรรมโดยมีหัวข้อดังนี้:
+1. ชื่อกิจกรรม (ตั้งให้น่าสนใจ ดึงดูดวัยเรียน)
+2. กติกาและวิธีการเล่น/ทำกิจกรรม (อธิบายทีละขั้นตอน Step-by-step เน้นการลงมือปฏิบัติเพื่อสร้างสมรรถนะ)
+3. การบริหารเวลา (แบ่งช่วงเวลาให้พอดีกับ ${duration})
+4. คำถามสะท้อนคิด (Reflection/Debrief) เพื่อสรุปบทเรียนและเชื่อมโยงสู่ชีวิตจริง`;
+        } 
+        else if (taskRaw.includes("Rubric")) {
+            specificStructure = `[Structure / องค์ประกอบที่ต้องมี]
+กรุณาสร้างตารางเกณฑ์การประเมินผล (Rubric) โดยมีรายละเอียดดังนี้:
+1. เกณฑ์การประเมิน 4 ระดับ (เช่น ดีมาก, ดี, พอใช้, ปรับปรุง)
+2. คำอธิบายพฤติกรรมหรือชิ้นงานในแต่ละระดับที่ชัดเจน สังเกตและวัดผลสมรรถนะได้จริง ไม่ใช้ความรู้สึก
+3. น้ำหนักคะแนนในแต่ละหัวข้อการประเมิน`;
+        }
+
+        // 3. ประกอบร่าง Prompt ระดับ Masterpiece
         currentPromptText = `[Role]
-คุณคือ ${role}
+คุณคือ ${role} ที่มีประสบการณ์สูง
 
 [Task]
-หน้าที่ของคุณคือ ${task}
+หน้าที่ของคุณคือ ${taskRaw} (เวลา/ความยาว: ${duration})
 
 [Context]
 - วิชา: ${subject}
-- ระดับชั้นของผู้เรียน: ${grade}
-- หัวข้อ/เนื้อหาที่ต้องการเน้น: ${topic}
+- ระดับชั้นของผู้เรียน: ${grade}${curriculumText}
+- หัวข้อเนื้อหาหลัก: ${topic}${skillsText}
+- เป้าหมายการเรียนรู้/สมรรถนะที่ต้องการ: ${objective}
+
+${specificStructure}
 
 [Format & Tone]
 ข้อกำหนดเพิ่มเติม: ${format}
-กรุณาสร้างผลลัพธ์ที่ดีที่สุดโดยอิงจากข้อมูลข้างต้น`;
 
-        // แสดงผลบนหน้าเว็บ
+(ไม่ต้องเกริ่นนำหรือสรุปปิดท้าย กรุณาเริ่มสร้างเนื้อหาตามโครงสร้างด้านบนได้ทันที)`;
+
+        // 4. แสดงผล
         document.getElementById('generated-prompt').innerText = currentPromptText;
         document.getElementById('output-section').style.display = 'block';
-        
-        // เลื่อนหน้าจอลงมาที่ผลลัพธ์
-        document.getElementById('output-section').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // ฟังก์ชันคัดลอก
     function copyToClipboard() {
         if (!currentPromptText) return;
-        
         navigator.clipboard.writeText(currentPromptText).then(() => {
             const copyBtn = document.querySelector('.btn-copy');
             const originalText = copyBtn.innerText;
-            copyBtn.innerText = "✅ คัดลอกแล้ว!";
-            copyBtn.style.background = "#219653";
-            
+            copyBtn.innerText = "✅ คัดลอกสำเร็จ!";
+            copyBtn.style.background = "#1e8449";
             setTimeout(() => {
                 copyBtn.innerText = originalText;
                 copyBtn.style.background = "#27ae60";
             }, 2000);
         }).catch(err => {
-            alert('ไม่สามารถคัดลอกได้ กรุณาคลุมดำและก๊อปปี้ด้วยตัวเองครับ');
+            alert('เบราว์เซอร์ของคุณไม่รองรับการคัดลอกอัตโนมัติ กรุณาคลุมดำข้อความแล้วกด Ctrl+C ครับ');
         });
     }
 
+    // ฟังก์ชันดาวน์โหลด
     function downloadTxt() {
         if (!currentPromptText) return;
-        
-        // สร้างไฟล์ .txt จำลองบนเบราว์เซอร์
         const blob = new Blob([currentPromptText], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
-        
-        // สร้างลิงก์ดาวน์โหลดและสั่งคลิก
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Teacher_Prompt_${new Date().getTime()}.txt`;
+        const subject = document.getElementById('subject').value || "Subject";
+        a.download = `Prompt_${subject}_${new Date().getTime()}.txt`;
         document.body.appendChild(a);
         a.click();
-        
-        // คืนค่าหน่วยความจำ
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
