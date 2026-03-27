@@ -52,18 +52,22 @@
             <div class="form-group">
                 <label>🎭 AI สวมบทบาทเป็น</label>
                 <select id="role">
-                    <option value="ครูผู้เชี่ยวชาญด้านการออกแบบการจัดการเรียนรู้เชิงรุก (Active Learning)">ผู้เชี่ยวชาญ Active Learning</option>
-                    <option value="ครูวิชาวิทยาศาสตร์และเทคโนโลยี">ครูสายวิทย์-เทคโนโลยี</option>
-                    <option value="ครูวิชาภาษาไทยและสังคมศึกษา">ครูสายภาษา-สังคม</option>
+                    <option value="ครูวิทยาศาสตร์">ครูวิทยาศาสตร์</option>
+                    <option value="ครูเทคโนโลยี">ครูเทคโนโลยี</option>
+                    <option value="ครูภาษาไทย">ครูภาษาไทย</option>
+                    <option value="ครูภาษาอังกฤษ">ครูภาษาอังกฤษ</option>
+                    <option value="ครูสังคมศึกษา">ครูสังคมศึกษา</option>
+                    <option value="ครูศิลปะ">ครูศิลปะ</option>
+                    <option value="ครูพละและสุขศึกษา">ครูพละและสุขศึกษา</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>🎯 งานที่ต้องการให้ทำ</label>
                 <select id="task">
-                    <option value="เขียนแผนการจัดการเรียนรู้ (Lesson Plan)">📝 เขียนแผนการจัดการเรียนรู้</option>
-                    <option value="ออกข้อสอบปรนัย 4 ตัวเลือก จำนวน 10 ข้อ">📝 ออกข้อสอบปรนัย</option>
-                    <option value="ออกแบบกิจกรรมกลุ่มในห้องเรียน">🎲 ออกแบบกิจกรรม</option>
-                    <option value="สร้างตารางเกณฑ์การประเมินผล (Rubric Score)">📊 สร้าง Rubric</option>
+                    <option value="ออกแบบแผนการจัดการเรียนรู้">📝 ออกแบบแผนการจัดการเรียนรู้</option>
+                    <option value="ออกแบบกิจกรรมการเรียนรู้">🎲 ออกแบบกิจกรรมการเรียนรู้</option>
+                    <option value="สร้างข้อสอบปรนัย">📝 สร้างข้อสอบปรนัย</option>
+                    <option value="สร้างข้อสอบแบบอัตนัย">✍️ สร้างข้อสอบแบบอัตนัย</option>
                 </select>
             </div>
         </div>
@@ -165,20 +169,20 @@
             let skillsText = "";
             if (skills) skillsText = `\n- ทักษะ/สมรรถนะย่อยที่ต้องการเน้น: ${skills}`;
 
-            // โครงสร้าง AI
+            // โครงสร้าง AI (อัปเดตใหม่ให้ตรงกับตัวเลือก Task)
             let specificStructure = "";
             if (taskRaw.includes("แผนการจัดการเรียนรู้")) {
                 specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. จุดประสงค์การเรียนรู้ (แยก K-S-A)\n2. สื่อและแหล่งการเรียนรู้\n3. กิจกรรมการจัดการเรียนรู้ (จัดสรรเวลา ${duration} แบ่งเป็น ขั้นนำ ขั้นสอน ขั้นสรุป)\n4. การวัดและประเมินผล (สอดคล้อง K-S-A)`;
-            } else if (taskRaw.includes("ข้อสอบ")) {
-                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. คำถามที่ชัดเจน\n2. ตัวเลือก 4 ข้อ (พร้อมตัวลวงที่สมเหตุสมผล)\n3. เฉลยข้อที่ถูกต้อง\n4. คำอธิบายเฉลยอย่างละเอียด`;
+            } else if (taskRaw.includes("ข้อสอบปรนัย")) {
+                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. คำถามที่ชัดเจน สอดคล้องกับตัวชี้วัด/สมรรถนะ\n2. ตัวเลือก 4 ข้อ (พร้อมตัวลวงที่สมเหตุสมผล)\n3. เฉลยข้อที่ถูกต้อง\n4. คำอธิบายเฉลยอย่างละเอียด`;
+            } else if (taskRaw.includes("ข้อสอบแบบอัตนัย")) {
+                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. สถานการณ์หรือโจทย์คำถามที่ส่งเสริมการคิดวิเคราะห์และแก้ปัญหา\n2. แนวทางการตอบ (Rubric อย่างย่อ) สำหรับให้คะแนน\n3. จุดประสงค์/สมรรถนะที่ข้อสอบข้อนี้ต้องการวัด`;
             } else if (taskRaw.includes("กิจกรรม")) {
-                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. ชื่อกิจกรรม\n2. กติกาและวิธีการ (Step-by-step)\n3. การบริหารเวลา (${duration})\n4. คำถามสะท้อนคิด (Reflection)`;
-            } else if (taskRaw.includes("Rubric")) {
-                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. เกณฑ์ประเมิน 4 ระดับ\n2. คำอธิบายพฤติกรรมที่ชัดเจน วัดผลได้จริง\n3. น้ำหนักคะแนน`;
+                specificStructure = `[Structure / องค์ประกอบที่ต้องมี]\n1. ชื่อกิจกรรม\n2. กติกาและวิธีการ (Step-by-step เน้น Active Learning)\n3. การบริหารเวลา (${duration})\n4. คำถามสะท้อนคิด (Reflection)`;
             }
 
             // ประกอบข้อความ
-            currentPromptText = `[Role]\nคุณคือ ${role}\n\n[Task]\nหน้าที่ของคุณคือ ${taskRaw} (เวลา: ${duration})\n\n[Context]\n- วิชา: ${subject}\n- ระดับชั้น: ${grade}${curriculumText}\n- หัวข้อเนื้อหา: ${topic}${skillsText}\n- เป้าหมายการเรียนรู้: ${objective}\n\n${specificStructure}\n\n[Format & Tone]\nข้อกำหนด: ${format}\n\n(เริ่มสร้างเนื้อหาตามโครงสร้างด้านบนได้ทันที ไม่ต้องเกริ่นนำ)`;
+            currentPromptText = `[Role]\nคุณคือ ${role} ผู้เชี่ยวชาญ\n\n[Task]\nหน้าที่ของคุณคือ ${taskRaw} (เวลา: ${duration})\n\n[Context]\n- วิชา: ${subject}\n- ระดับชั้น: ${grade}${curriculumText}\n- หัวข้อเนื้อหา: ${topic}${skillsText}\n- เป้าหมายการเรียนรู้: ${objective}\n\n${specificStructure}\n\n[Format & Tone]\nข้อกำหนด: ${format}\n\n(เริ่มสร้างเนื้อหาตามโครงสร้างด้านบนได้ทันที ไม่ต้องเกริ่นนำ)`;
 
             // แสดงผล
             document.getElementById('generated-prompt').innerText = currentPromptText;
